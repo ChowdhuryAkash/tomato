@@ -1,0 +1,13 @@
+status of orders :---
+
+pending
+accepted
+gotpartner
+partnerreachedrestaurant
+handovered
+reached
+delivered
+gotpayment
+paid
+
+69d66591-cd5b-4486-8533-13da0a0fcefb

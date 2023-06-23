@@ -1,0 +1,17 @@
+.popup{
+    width:60%;
+    height:auto;
+    padding: 20px;
+    background: #fff;
+    position: absolute;
+    z-index: 100;
+    margin-left: 20%;
+    margin-top: 100px;
+    box-shadow: 0 0 2000px gray;
+}
+.cut{
+    float: right;
+    font-size: 30px;
+    margin-right: 10px;
+    cursor: pointer;
+}

@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "tomato",
+    "slug": "tomato",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/ic_launcher_round.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ff4242"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/ic_launcher_round.png",
+        "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+           "apiKey": "AIzaSyDHKu_pr8sYcgxSDWgpppwXZ4CJ87h4ZVk"
+        }
+      },
+      "package": "com.akashchowdhury.tomato"
+
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5a08ca61-60c0-4a54-8db0-dc818347130e"
+      }
+    }
+  }
+}
+
+
+
+

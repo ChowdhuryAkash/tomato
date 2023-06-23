@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "tomato-Delivery",
+    "slug": "tomato-Delivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/ic_launcher_round.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4FB548"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+           "apiKey": "AIzaSyCXTdafLxmomFpkiEuVSjbMnQxPluRCeWM"
+        }
+      },
+      "package": "com.akashchowdhury.tomatoDelivery"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7ee3ea32-4b13-4bff-838c-5db14f9f88a1"
+      }
+    }
+  }
+}
