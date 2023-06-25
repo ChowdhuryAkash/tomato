@@ -42,6 +42,7 @@ const Signup = ({ navigation }) => {
         const userData = {
             name,
             email,
+            phone:"",
             password,
             address,
         }

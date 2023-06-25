@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, Image, ScrollView, TouchableOpacity, Alert, TextInput,PermissionsAndroid } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, Image, ScrollView, TouchableOpacity, Alert, TextInput, PermissionsAndroid } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase, db } from '../Firebase/firebaseConfig'
@@ -12,6 +12,7 @@ import * as Location from 'expo-location';
 
 const Checkout = ({ navigation, route }) => {
     const [sound, setSound] = React.useState();
+
     async function playSound() {
         console.log('Loading Sound');
         const { sound } = await Audio.Sound.createAsync(require('../assets/zomato.mp3')
@@ -33,7 +34,18 @@ const Checkout = ({ navigation, route }) => {
     const DeliveryFee = 70;
     const foodRef = firebase.firestore().collection('FoodData');
     const restaurantRef = firebase.firestore().collection('Restaurants');
-    
+
+
+
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState([]);
+    const [email, setEmail] = useState("");
+    const userRef = firebase.firestore().collection('users');
+
+
+
+
+
     // const[totalPrice,setTotalPrice]=useState(0);
     var totalPrice = 0;
     // const[userEmailId,setUserEmailId]=useState("");
@@ -42,11 +54,13 @@ const Checkout = ({ navigation, route }) => {
     let restaurantEmailId = "";
     let restaurantName = "";
 
-    
-  const [restaurants, setRestaurants] = useState([]);
-  const [restaurant, setRestaurant] = useState([]);
-  const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
 
+    const [restaurants, setRestaurants] = useState([]);
+    const [restaurant, setRestaurant] = useState([]);
+    const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
+
+    const [address, setAddress] = useState("");
+    
     // useEffect(() => {
     //     getData();
     //     foodRef.onSnapshot(snapshot => {
@@ -61,30 +75,30 @@ const Checkout = ({ navigation, route }) => {
     //         //   setErrorMsg('Permission to access location was denied');
     //           return;
     //         }
-      
+
     //         let location = await Location.getCurrentPositionAsync({});
     //         setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
     //         console.warn(location.coords.latitude);
     //         console.warn(location.coords.longitude);
     //       })();
-      
-      
+
+
 
 
     // }, [])
-const getLocation=async () => {
-    
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return;
-    }
+    const getLocation = async () => {
 
-    let location = await Location.getCurrentPositionAsync({});
-    setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
-    // console.warn(location.coords.latitude);
-    // console.warn(location.coords.longitude);
-  }
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
+        // console.warn(location.coords.latitude);
+        // console.warn(location.coords.longitude);
+    }
 
 
 
@@ -98,18 +112,35 @@ const getLocation=async () => {
             setRestaurants(snapshot.docs.map(doc => doc.data()))
         }
         )
-    
+
         getLocation();
-    
-    
-    
-    
-    
-    
-      }, [])
+
+        userRef.onSnapshot(snapshot => {
+            setUsers(snapshot.docs.map(doc => ({ ...doc.data(), ID: doc.id })))
+        })
 
 
-      useEffect(() => {
+
+
+
+
+    }, [])
+    useEffect(() => {
+        setUser(users.filter((item) => item.email.includes(email)))
+    
+    }, [users])
+    useEffect(() => {
+        // console.log(user);
+        if (user.length != 0) {
+            setPhone(user[0].phone);
+            setDeliveryAddress(user[0].address);
+        }
+    
+    
+    }, [user])
+
+
+    useEffect(() => {
         setRestaurant([restaurants.filter((item) => item.restaurantEmail.includes(restaurantEmailId))])
         // setResName(mainData[0].restaurantEmail);
 
@@ -126,6 +157,7 @@ const getLocation=async () => {
         try {
             const value = await AsyncStorage.getItem('email')
             // alert(value);
+            setEmail(value);
             userEmailId = value;
         } catch (e) {
             // error reading value
@@ -157,9 +189,9 @@ const getLocation=async () => {
                 + currentdate.getMinutes() + ":"
                 + currentdate.getSeconds();
 
-                // let diff=getTimeDiff('{nexttime}', '{time}', 'm');
-                // console.log(diff);
-                
+            // let diff=getTimeDiff('{nexttime}', '{time}', 'm');
+            // console.log(diff);
+
             const orderData = {
                 id: uuid.v4(),
                 restaurantEmailId,
@@ -173,18 +205,18 @@ const getLocation=async () => {
                 DeliveryLat: origin.latitude,
                 DeliveryLon: origin.longitude,
                 deliveryBoyEmail: "",
-                RestaurantLat:restaurant[0][0].lat,
-                RestaurantLon:restaurant[0][0].long,
+                RestaurantLat: restaurant[0][0].lat,
+                RestaurantLon: restaurant[0][0].long,
                 // Restaurantphone:restaurant[0][0].phone,
-                
-                Restaurantphone:"9645633037",
-                deliveryBoyLat:0,
-                deliveryBoyLon:0,
+
+                Restaurantphone: "9645633037",
+                deliveryBoyLat: 0,
+                deliveryBoyLon: 0,
                 status: "pending",
                 date: date,
                 time: time,
                 deliveryTime: nexttime,
-                dateTimeStamp:currentdate.toString(),
+                dateTimeStamp: currentdate.toString(),
 
 
             }

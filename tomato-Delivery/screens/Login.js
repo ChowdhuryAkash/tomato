@@ -50,12 +50,12 @@ const Signup = ({ navigation }) => {
       const value = await AsyncStorage.getItem('email')
         // alert(value)
       if (value == "400") {
-        // navigation.navigate("homescreen")
+        // navigation.navigate("main")
 
       }
       else {
         if(value.length>0){
-          navigation.replace("homescreen");
+          navigation.replace("main");
         }
       }
     } catch (e) {

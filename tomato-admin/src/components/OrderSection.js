@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db, storage, firebase } from '../Firebase/FirebaseConfig'
-import { collection, doc, getDocs, setDoc,updateDoc,where } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc, updateDoc, where } from "firebase/firestore";
 import './OrderSection.css'
 import EditIcon from '@mui/icons-material/Edit';
 import Navbar from './Navbar';
@@ -28,7 +28,7 @@ export default function OrderSection() {
         // console.warn(mainData[0][0].restaurantEmail);
         // [[{"foodAddon": "Extra cheese", "foodAddonPrice": "30", "foodCategory": "veg", "foodDescription": "Chicken Burger", "foodImageUrl": "https://firebasestorage.googleapis.com/v0/b/tomato-996be.appspot.com/o/FoodImages%2Fburger.jpg?alt=media&token=3d202b58-b967-4fb2-8345-958a8ca30a13", "foodName": "Burger", "foodPrice": "100", "foodType": "non-veg", "id": "1685722176138", "mealType": "dinner", "restaurantEmail": "ssh@gmail.com", "restaurantName": "SSH restaurant"}]]
 
-        setShowData(orders.filter((item) => item.status.includes("pending") || item.status.includes("accepted")|| item.status.includes("gotpartner") || item.status.includes("partnerreachedrestaurant")))
+        setShowData(orders.filter((item) => item.status.includes("pending") || item.status.includes("accepted") || item.status.includes("gotpartner") || item.status.includes("partnerreachedrestaurant")))
 
 
     }, [orders])
@@ -46,19 +46,19 @@ export default function OrderSection() {
 
 
     }, [orders])
-    const approveOrder = async(id) => {
+    const approveOrder = async (id) => {
         const userDoc = doc(db, "Orders", id);
         const newFields = { status: "accepted" };
         await updateDoc(userDoc, newFields);
 
     }
-    const rejectOrder = async(id) => {
+    const rejectOrder = async (id) => {
         const userDoc = doc(db, "Orders", id);
         const newFields = { status: "rejected" };
         await updateDoc(userDoc, newFields);
 
     }
-    const handovered = async(id) => {
+    const handovered = async (id) => {
         const userDoc = doc(db, "Orders", id);
         const newFields = { status: "handovered" };
         await updateDoc(userDoc, newFields);
@@ -68,12 +68,17 @@ export default function OrderSection() {
         <div>
             <Navbar />
             <div className='orders'>
-            <center><u><h4>Current Orders</h4></u></center>
+                <center><u><h4>Current Orders</h4></u></center>
 
                 {
                     showData.map((item) => {
                         return (
                             <div className='order'>
+                                <div className='price'>
+                                    <p>ID : {item.ID}</p>
+
+
+                                </div>
                                 <div className='foods'>
 
                                     {item.order.map((menu) => {
@@ -81,7 +86,7 @@ export default function OrderSection() {
                                             <>
                                                 {
                                                     foodData.map((food) => {
-                                                        if (food.id == menu.id && menu.quantity>0)
+                                                        if (food.id == menu.id && menu.quantity > 0)
                                                             return (
                                                                 <h5>{`${food.foodName} -- ${menu.quantity}`}</h5>
                                                             )
@@ -116,10 +121,10 @@ export default function OrderSection() {
                                     {
                                         item.status == "pending" ?
                                             <>
-                                                <p className='btn btn-success' onClick={()=>{approveOrder(item.ID)}}>Approve</p>
-                                                <p className='btn btn-danger' onClick={()=>{rejectOrder(item.ID)}}>Decline</p>
+                                                <p className='btn btn-success' onClick={() => { approveOrder(item.ID) }}>Approve</p>
+                                                <p className='btn btn-danger' onClick={() => { rejectOrder(item.ID) }}>Decline</p>
                                             </>
-                                            : item.status == "partnerreachedrestaurant" ?<p className='btn btn-success' onClick={()=>{handovered(item.ID)}}>Hand over</p>:""
+                                            : item.status == "partnerreachedrestaurant" ? <p className='btn btn-success' onClick={() => { handovered(item.ID) }}>Hand over</p> : ""
                                     }
 
                                 </div>

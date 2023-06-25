@@ -1,64 +1,74 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity,ScrollView } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, ScrollView, Image } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
+import Loader from '../components/Loader';
 // firebase imports
-import { db, storage,firebase } from '../Firebase/firebaseConfig'
+import { db, storage, firebase } from '../Firebase/firebaseConfig'
 import {
     addDoc, collection, getDocs, query, where, updateDoc,
     deleteDoc,
     doc,
     or,
-  } from "firebase/firestore";
-  
+} from "firebase/firestore";
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-  import { AntDesign } from '@expo/vector-icons';
-  import { Feather } from '@expo/vector-icons';
-  import { Entypo } from '@expo/vector-icons';
-  import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
-  
+
+import { Audio } from 'expo-av';
 import * as Location from 'expo-location';
 
-const Findorder = ({navigation}) => {
-    
-const [email, setEmail] = useState('');
+const Findorder = (props) => {
+    async function playSound() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync(require('../assets/zomato.mp3')
+        );
+        // setSound(sound);
 
-const [users, setUsers] = useState([]);
-const [user, setUser] = useState([]);
-const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('email')
-      setEmail(value);
-        // alert(value)
-     
-    } catch (e) {
-      // error reading value
+        console.log('Playing Sound');
+        await sound.playAsync();
     }
-  }
+    const [email, setEmail] = useState('');
+
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState([]);
+    const getData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('email')
+            setEmail(value);
+            // alert(value)
+
+        } catch (e) {
+            // error reading value
+        }
+    }
 
 
-    const getLocation=async () => {
-    
+    const getLocation = async () => {
+
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
+            setErrorMsg('Permission to access location was denied');
+            return;
         }
-    
+
         let location = await Location.getCurrentPositionAsync({});
         setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
         // console.warn(location.coords.latitude);
         // console.warn(location.coords.longitude);
-      }
+    }
 
-// SystemNavigationBar.setNavigationColor('red');
+    // SystemNavigationBar.setNavigationColor('red');
     const [orders, setOrders] = useState([]);
     const [order, setOrder] = useState([]);
     const orderRef = firebase.firestore().collection('Orders');
     const userRef = firebase.firestore().collection('DeliveryBoy');
-    
-  const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
+
+    const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
     useEffect(() => {
         orderRef.onSnapshot(snapshot => {
             setOrders(snapshot.docs.map(doc => ({ ...doc.data(), ID: doc.id })))
@@ -70,12 +80,14 @@ const getData = async () => {
         }
         )
         // bottomColorChange();
-        
+
         // SystemNavigationBar.setNavigationColor('red');
 
         getData()
         getLocation();
         
+        // playSound();
+
     }, [])
     // const bottomColorChange = async () => {
     //     try{
@@ -84,7 +96,7 @@ const getData = async () => {
     //     }catch(e){
     //         console.log(e)// {success: false}
     //     }
-      
+
     // };
 
 
@@ -106,16 +118,19 @@ const getData = async () => {
     useEffect(() => {
         console.log(order)
     }, [order])
-const getOrder=async(ID,id)=>{  
-    const orderDoc = doc(db, "Orders", ID);
-    const newFields = { deliveryBoyEmail:user[0].email,deliveryBoyName:user[0].name ,deliveryBoyPhone:user[0].phone ,status:"gotpartner",deliveryBoyLat:origin.latitude,deliveryBoyLon:origin.longitude };
-    await updateDoc(orderDoc,newFields).catch((error) => {
-        console.log("Error updating document: ", error);
-    });
-    alert("You Got the order");
-    navigation.replace('delivery',id)
 
-}
+
+    const getOrder = async (ID, id) => {
+        const orderDoc = doc(db, "Orders", ID);
+        const newFields = { deliveryBoyEmail: user[0].email, deliveryBoyName: user[0].name, deliveryBoyPhone: user[0].phone, status: "gotpartner", deliveryBoyLat: origin.latitude, deliveryBoyLon: origin.longitude };
+        await updateDoc(orderDoc, newFields).catch((error) => {
+            console.log("Error updating document: ", error);
+        });
+        alert("You Got the order");
+        props.navigating('delivery',id)
+        playSound();
+
+    }
     return (
         <View style={styles.main}>
             <StatusBar
@@ -124,80 +139,80 @@ const getOrder=async(ID,id)=>{
             />
             <Text style={styles.maintext}>Find Orders</Text>
             <View style={styles.orders}>
-            <ScrollView style={{height:"100%",width:"100%"}}>
-                {
-                    order.length == 0 ?
+                <ScrollView style={{ height: "100%", width: "100%",}}>
+                    {
+                        order.length == 0 ?
 
-                    <>
-                    <Text style={{alignSelf:"center",textAlign:"center"}}>No Orders currently found</Text>
-                    
-                    <Text style={{alignSelf:"center",textAlign:"center"}}>still finding orders...</Text>
-                    <Text style={{alignSelf:"center",textAlign:"center"}}>Please wait...</Text>
-                    
-                    </>
-                    :
-                    <>
-                      {
-                    order.map((item) => {
+                         
+                               
+                                <View style={{ backgroundColor: "#fff", width: "50%", height: 170, left: "25%", justifyContent: "center", alignItems: "center", borderRadius: 6 }}>
+                                    <Image style={{ width: 80, height: 80, }} source={require('../assets/loader.gif')} />
+                                </View>
 
-                        return (
+                          
+                            :
+                            <>
+                                {
+                                    order.map((item) => {
 
-                            <View style={styles.order} key={item.ID}>
-                                
-                                <Text style={styles.ordertext}>Order Id:- {item.ID}</Text>
-                                <Text style={styles.ordertext}>Pick up Location:- {item.restaurantName} </Text>
-                                <Text style={styles.ordertext}>Delivery Location:- {item.DeliveryAddress}</Text>
-                                <Text style={styles.ordertext}>Delivery Price:- {item.DeliveryFee}</Text>
-                                <Text style={styles.ordertext}>Delivery by:- {item.deliveryTime}</Text>
-                                <TouchableOpacity style={styles.orderbtn} onPress={()=>{
-                                    getOrder(item.ID,item.id)
-                                }}><Text style={styles.orderbtntext}>Take order</Text></TouchableOpacity>
+                                        return (
 
-                            </View>
-                        )
+                                            <View style={styles.order} key={item.ID}>
+
+                                                <Text style={styles.ordertext}>Order Id:- {item.ID}</Text>
+                                                <Text style={styles.ordertext}>Pick up Location:- {item.restaurantName} </Text>
+                                                <Text style={styles.ordertext}>Delivery Location:- {item.DeliveryAddress}</Text>
+                                                <Text style={styles.ordertext}>Delivery Price:- {item.DeliveryFee}</Text>
+                                                <Text style={styles.ordertext}>Delivery by:- {item.deliveryTime}</Text>
+                                                <TouchableOpacity style={styles.orderbtn} onPress={() => {
+                                                    getOrder(item.ID, item.id)
+                                                }}><Text style={styles.orderbtntext}>Take order</Text></TouchableOpacity>
+
+                                            </View>
+                                        )
 
 
 
-                    })
-                }
+                                    })
+                                }
 
-                    
-                    </>
-                }
+
+                            </>
+                    }
                 </ScrollView>
-              
+
             </View>
-            <View style={styles.nav}>
-      <View style={styles.maainBox}>
-            <TouchableOpacity  onPress={() => { navigation.navigate("homescreen") }}>
-                <View style={styles.navTab}>
-                    <AntDesign name="home" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Home</Text>
-                </View>
-            </TouchableOpacity>
+            {/* <View style={styles.nav}>
+                <View style={styles.maainBox}>
+                    <TouchableOpacity onPress={() => { navigation.navigate("homescreen") }}>
+                        <View style={styles.navTab}>
+                            <AntDesign name="home" size={24} color="#fff" />
+                            <Text style={styles.navTabText}>Home</Text>
+                        </View>
+                    </TouchableOpacity>
 
-            <TouchableOpacity  onPress={() => { navigation.navigate("history") }}>
-                <View style={styles.navTab}>
-                    <Feather name="list" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>History</Text>
+                    <TouchableOpacity onPress={() => { navigation.navigate("history") }}>
+                        <View style={styles.navTab}>
+                            <Feather name="list" size={24} color="#fff" />
+                            <Text style={styles.navTabText}>History</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { navigation.navigate("findorder") }}>
+                        <View style={styles.navTab}>
+                            <Entypo name="magnifying-glass" size={24} color="#fff" />
+                            <Text style={styles.navTabText}>Find Order</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { navigation.replace("profile") }}>
+                        <View style={styles.navTab}>
+                            <Ionicons name="person-circle" size={24} color="#fff" />
+                            <Text style={styles.navTabText}>Profile</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity  onPress={() => { navigation.navigate("findorder") }}>
-                <View style={styles.navTab}>
-                    <Entypo name="magnifying-glass" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Find Order</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity  onPress={() => { navigation.replace("profile") }}>
-                <View style={styles.navTab}>
-                    <Ionicons name="person-circle" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Profile</Text>
-                </View>
-            </TouchableOpacity>
-        </View>
 
-        </View>
-            
+            </View> */}
+
         </View>
     )
 }
@@ -212,22 +227,27 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 30
     },
-    main:{
-        flex:1,
+    main: {
+        flex: 1,
+        backgroundColor: "#eee",
     },
     orders: {
         width: "100%",
         justifyContent: "center",
         alignItems: "center",
+        height: "100%",
+        backgroundColor: "#eee",
 
     },
     order: {
         width: "90%",
         height: "auto",
-        borderColor: "#aaa",
-        borderWidth: 1,
+        backgroundColor:"#fff",
         padding: 10,
         alignSelf: "center",
+        marginTop:20,
+        borderRadius: 10,
+        
     },
     ordertext: {
         fontSize: 15,
@@ -250,12 +270,12 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20
     },
-    nav:{
-        position:"absolute",
-        bottom:0,
-        left:0,
-        width:"100%",
-        height:60,
+    nav: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        height: 60,
 
     },
     maainBox: {

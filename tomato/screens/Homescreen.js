@@ -131,7 +131,7 @@ const Homescreen = ({ navigation }) => {
     }, [users])
     useEffect(() => {
         // getUser();
-        // console.warn("user :"+user)
+        // console.warn("user :"+user[0])
     }, [user])
 
 

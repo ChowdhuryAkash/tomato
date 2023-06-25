@@ -22,7 +22,7 @@ const Delivery = ({ navigation, route }) => {
   // const orderId = "84480d65-d9be-4401-9ce8-ed377279a919";
   const orderId = route.params;
   if (orderId == null) {
-    navigation.replace('homescreen');
+    navigation.replace('main');
   }
   // console.warn(orderId);
   const [orders, setOrders] = useState([]);
@@ -149,7 +149,7 @@ const Delivery = ({ navigation, route }) => {
   };
   const updateStatement = async (id, status) => {
     if (status == "delivered") {
-      navigation.replace("findorder");
+      navigation.replace("main");
     }
     else {
       const orderDoc = doc(db, "Orders", id);
@@ -206,8 +206,8 @@ const Delivery = ({ navigation, route }) => {
 
         </View>
         <View style={styles.greenBox}>
-          <Text style={styles.smallText}>ORDER FROM <AntDesign name="down" size={14} color="white" /></Text>
-          <Text style={styles.restaurantName}>{order[0].restaurantName}</Text>
+          <Text style={styles.smallText}>ORDER ID <AntDesign name="down" size={14} color="white" /></Text>
+          <Text style={styles.restaurantName}>{order[0].ID}</Text>
 
           <Text style={styles.status}>Have a safe journey!</Text>
           {
@@ -388,7 +388,7 @@ const Delivery = ({ navigation, route }) => {
 
                     }
                     {(order[0].status == "delivered") ?
-                      <Text style={styles.deliveryBoyBottomBtnText}>Get new order</Text>
+                      <Text style={styles.deliveryBoyBottomBtnText}>Go Back</Text>
                       : ""
 
                     }

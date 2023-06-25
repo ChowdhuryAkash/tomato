@@ -32,7 +32,6 @@ const Welcomescreen = ({navigation}) => {
   //   }
   // };
 
-  AsyncStorage.setItem('email', "400");
   useEffect(()=>{
     // requestLocationPermission();
     

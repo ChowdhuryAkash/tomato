@@ -8,6 +8,9 @@ import Delivery from './screens/Delivery';
 import Nav from './components/Nav';
 
 import Welcomescreen from "./screens/Welcomescreen"
+import Main from "./screens/Main"
+
+import Editprofile from "./screens/Editprofile"
 
 
 import History from './screens/History';
@@ -38,12 +41,26 @@ const App = () => {
           options={{
             headerShown: false,
           }} />
+
+<Stack.Screen name="main" component={Main}
+          options={{
+            headerShown: false,
+          }} />
+
+<Stack.Screen name="editprofile" component={Editprofile}
+          options={{
+            headerShown: false,
+          }} />
+
+
+
+
           <Stack.Screen name="delivery" component={Delivery}
           options={{
             headerShown: false,
           }} />
 
-        <Stack.Screen name="homescreen" component={Homescreen}
+        {/* <Stack.Screen name="homescreen" component={Homescreen}
           options={{
             headerShown: false,
           }} />
@@ -59,7 +76,7 @@ const App = () => {
         <Stack.Screen name="profile" component={Profile}
           options={{
             headerShown: false,
-          }} />
+          }} /> */}
 
         
 
@@ -68,6 +85,8 @@ const App = () => {
 
       </Stack.Navigator>
     </NavigationContainer>
+
+  
 
   )
 }

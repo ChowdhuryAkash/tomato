@@ -68,6 +68,12 @@ export default function OrderSection() {
                     showData.map((item) => {
                         return (
                             <div className='order'>
+                                  <div className='price'>
+                                    <p>ID : {item.ID}</p>
+                                   
+
+                                </div>
+                                
                                 <div className='foods'>
 
                                     {item.order.map((menu) => {

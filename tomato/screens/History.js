@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, StatusBar, TouchableOpacity, ScrollView } from 
 import React, { useState, useEffect } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Nav from '../components/Nav';
 // firebase imports
 import { db, storage, firebase } from '../Firebase/firebaseConfig'
 import {
@@ -26,6 +25,11 @@ const History = ({ navigation }) => {
     const [orders, setOrders] = useState([]);
     const [order, setOrder] = useState([]);
     const [email, setEmail] = useState('');
+
+    const [foodData, setFoodData] = useState([]);
+    const [showData, setShowData] = useState([]);
+    const foodRef = firebase.firestore().collection('FoodData');
+
 
     const orderRef = firebase.firestore().collection('Orders');
     const getData = async () => {
@@ -52,8 +56,11 @@ const History = ({ navigation }) => {
 
     useEffect(() => {
         // alert(email)
-        setOrder(orders.filter((item) => (item.deliveryBoyEmail.includes(email) && item.status == "delivered")))
-
+        setOrder(orders.filter((item) => (item.userEmailId.includes(email) && item.status == "delivered")))
+        foodRef.onSnapshot(snapshot => {
+            setFoodData(snapshot.docs.map(doc => doc.data()))
+        }
+        )
     }, [orders, email])
 
 
@@ -63,10 +70,10 @@ const History = ({ navigation }) => {
     return (
         <View style={styles.main}>
             <StatusBar
-                backgroundColor="#4FB548"
+                backgroundColor="#ff4242"
                 barStyle="light-content"
             />
-            <Text style={styles.maintext}>Your Delivery History</Text>
+            <Text style={styles.maintext}>Your Order History</Text>
 
             <View style={styles.orders}>
                 <ScrollView style={{ height: "100%", width: "100%", }}>
@@ -79,6 +86,25 @@ const History = ({ navigation }) => {
 
                                 <View style={styles.order} key={item.ID}>
                                     <Text style={styles.ordertext}>Order Id:- {item.ID}</Text>
+                                    <Text style={styles.ordertext}>Order Items:- </Text>
+                                    {item.order.map((menu) => {
+                                        return (
+                                            <View style={{marginBottom:10}} key={menu.id}>
+                                                {
+                                                    foodData.map((food) => {
+                                                        if (food.id == menu.id && menu.quantity > 0)
+                                                            return (
+                                                                <Text key={food.id} style={{marginLeft:20}}>{`${food.foodName} -- ${menu.quantity}`}</Text>
+                                                            )
+
+                                                    })
+                                                }
+                                            </View>
+
+                                        )
+
+
+                                    })}
                                     <Text style={styles.ordertext}>Order Date:- {item.date}</Text>
                                     <Text style={styles.ordertext}>Order Time:- {item.time}</Text>
                                     <Text style={styles.ordertext}>Pick up Location:- {item.restaurantName} </Text>
@@ -168,7 +194,7 @@ const styles = StyleSheet.create({
         width: "100%",
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 140,
+        marginBottom: 80,
         // backgroundColor: "#f00",
 
     },

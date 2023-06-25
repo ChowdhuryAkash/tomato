@@ -1,101 +1,177 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, } from 'react-native'
-import React, { useState, useEffect } from 'react';
-import Nav from '../components/Nav';
-// firebase imports
-import { db, storage,firebase } from '../Firebase/firebaseConfig'
+import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+import { db, storage, firebase } from '../Firebase/firebaseConfig'
 import {
-    addDoc, collection, getDocs, query, where, updateDoc,
-    deleteDoc,
-    doc,
-  } from "firebase/firestore";
-  import AsyncStorage from '@react-native-async-storage/async-storage';
+  addDoc, collection, getDocs, query, where, updateDoc,
+  deleteDoc,
+  doc,
+  or,
+} from "firebase/firestore";
 
 
 
-  import { AntDesign } from '@expo/vector-icons';
-  import { Feather } from '@expo/vector-icons';
-  import { Entypo } from '@expo/vector-icons';
-  import { Ionicons } from '@expo/vector-icons';
-const Profile = ({navigation}) => {
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
-    const storeData = async (value) => {
-        try {
-          await AsyncStorage.setItem('email', value)
-        } catch (e) {
-          // saving error
-        }
+
+const Profile = (props) => {
+
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [password, setPassword] = useState('');
+  const [ID, setID] = useState('')
+
+
+  const [DeliveryBoy, setDeliveryBoy] = useState([]);
+  const [user, setUser] = useState([]);
+  const userRef = firebase.firestore().collection('DeliveryBoy');
+
+
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('email', value)
+    } catch (e) {
+      // saving error
+    }
+  }
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('email')
+      setEmail(value);
+      // alert(value)
+      if (value == "400") {
+        navigation.replace("login")
+
       }
-    
-      const getData = async () => {
-        try {
-          const value = await AsyncStorage.getItem('email')
-          // alert(value)
-          if(value =="400") {
-            navigation.replace("login")
-           
-          }
-          else{
-            // navigation.replace("homescreen")
-          }
-        } catch(e) {
-          // error reading value
-        }
+      else {
+        // navigation.replace("homescreen")
       }
-          useEffect(()=>{
-            getData();
-            // import AsyncStorage from '@react-native-async-storage/async-storage';
-            const value =  AsyncStorage.getItem('email')
-            //  cheching authication and redirect
-              if(value =="400") {
-                navigation.replace("homescreen")
-               
-              }
-        },[])
+    } catch (e) {
+      // error reading value
+    }
+  }
+  useEffect(() => {
+    getData();
+    // import AsyncStorage from '@react-native-async-storage/async-storage';
+    const value = AsyncStorage.getItem('email')
+    //  cheching authication and redirect
+    if (value == "400") {
+      navigation.replace("homescreen")
 
+    }
+
+
+    userRef.onSnapshot(snapshot => {
+      setDeliveryBoy(snapshot.docs.map(doc => ({ ...doc.data(), ID: doc.id })))
+    }
+    )
+  }, [])
+  useEffect(() => {
+    setUser(DeliveryBoy.filter((item) => item.email.includes(email)))
+
+  }, [DeliveryBoy])
+  useEffect(() => {
+    if (user.length > 0) {
+      setName(user[0].name)
+      setPhone(user[0].phone)
+      setAddress(user[0].address)
+      setPassword(user[0].password)
+      setID(user[0].ID)
+
+    }
+
+  }, [user])
   return (
     <View style={styles.main}>
-         <StatusBar
-                backgroundColor="#4FB548"
-                barStyle="light-content"
-            />
-      <Text style={styles.maintext}>Profile</Text>
-      <Text style={styles.logout} onPress={()=>{
+      <StatusBar
+        backgroundColor="#4FB548"
+        barStyle="light-content"
+      />
+      
+      <View style={styles.profileBox}>
+        <View style={styles.profileBoxLeft}>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>{name}</Text>
+          <Text style={{ fontSize: 15, fontWeight: 400, marginTop: 4 }}>{email}</Text>
+
+        </View>
+        <View style={styles.profileBoxRight}>
+          <Image style={styles.welcomepagelogo} source={require("../assets/logo.png")} ></Image>
+
+
+        </View>
+
+      </View>
+      <View style={styles.activities}>
+        {/* <TouchableOpacity onPress={() => props.history()}>
+          <View style={styles.activity}>
+            <MaterialCommunityIcons name="notebook-outline" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
+            <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Your Orders</Text>
+            <EvilIcons name="arrow-right" size={34} color="#555" />
+          </View>
+        </TouchableOpacity> */}
+        {/* <View style={styles.hr} /> */}
+
+        <TouchableOpacity onPress={() => {
+
+          props.navigating("editprofile", { ID: ID, name: name, email: email, address: address, phone: phone })
+
+
+        }}>
+          <View style={styles.activity}>
+            <Feather name="edit" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
+            <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Edit profile</Text>
+            <EvilIcons name="arrow-right" size={34} color="#555" />
+          </View>
+        </TouchableOpacity>
+        <View style={styles.hr} />
+
+        <View style={styles.activity}>
+          <AntDesign name="message1" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
+          <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Complaint</Text>
+          <EvilIcons name="arrow-right" size={34} color="#555" />
+        </View>
+
+
+
+      </View>
+
+      <TouchableOpacity onPress={() => {
+        props.logout();
+
+
+      }}>
+        <View style={styles.activities}>
+          <View style={styles.activity}>
+            <Feather name="power" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
+            <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Log out</Text>
+            {/* <EvilIcons name="arrow-right" size={34} color="#555" /> */}
+          </View>
+
+
+
+
+        </View>
+      </TouchableOpacity>
+
+
+
+      {/* <Text>Profile</Text> */}
+      {/* <Text style={styles.logout} onPress={()=>{
         storeData("400");
         getData();
         
 
-      }}>Logout</Text>
-
-      <View style={styles.nav}>
-      <View style={styles.maainBox}>
-            <TouchableOpacity  onPress={() => { navigation.navigate("homescreen") }}>
-                <View style={styles.navTab}>
-                    <AntDesign name="home" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Home</Text>
-                </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity  onPress={() => { navigation.navigate("history") }}>
-                <View style={styles.navTab}>
-                    <Feather name="list" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>History</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity  onPress={() => { navigation.navigate("findorder") }}>
-                <View style={styles.navTab}>
-                    <Entypo name="magnifying-glass" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Find Order</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity  onPress={() => { navigation.replace("profile") }}>
-                <View style={styles.navTab}>
-                    <Ionicons name="person-circle" size={24} color="#fff" />
-                    <Text style={styles.navTabText}>Profile</Text>
-                </View>
-            </TouchableOpacity>
-        </View>
-
-        </View>
+      }}>Logout</Text> */}
     </View>
   )
 }
@@ -103,49 +179,63 @@ const Profile = ({navigation}) => {
 export default Profile
 
 const styles = StyleSheet.create({
-  maintext: {
-    fontSize: 20,
-    color: "#555",
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 30
-},
-    main:{
-        flex:1,
-    }
-    ,logout:{
-        color:"red",
-        fontSize:30,
-        textAlign:"center",
-        marginTop:30
-    },
-    nav:{
-        position:"absolute",
-        bottom:0,
-        left:0,
-        width:"100%",
-        height:60,
+  main: {
+    flex: 1,
+    backgroundColor: "#eee",
+  },
+  profileBox: {
+    height: 120,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    margin: 20,
+    flexDirection: "row",
+    padding: 10,
+  },
+  welcomepagelogo: {
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    marginTop: 0,
+    marginLeft: 0,
+    padding: 0,
+    borderColor: "#ff4242",
+    borderWidth: 2,
+  },
+  activities: {
+    height: "auto",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    margin: 20,
+    padding: 10,
 
-    },
-    maainBox: {
-        width: "100%",
-        height: 60,
-        backgroundColor: "#4FB548",
-        position: "absolute",
-        bottom: 0,
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 10,
-    },
-    navTab: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    navTabText: {
-        textAlign: "center",
-        color: "#fff",
-    }
+  },
+  activity: {
+    height: 50,
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+
+  },
+  hr: {
+    height: 1,
+    width: "100%",
+    backgroundColor: "#eee",
+    marginTop: 5,
+    marginLeft: 0,
+    marginBottom: 10,
+
+  },
+
+
+
+
+
+
+
+  logout: {
+    color: "red",
+    fontSize: 30,
+    textAlign: "center",
+    marginTop: 30
+  }
 })

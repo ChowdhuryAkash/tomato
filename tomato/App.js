@@ -10,6 +10,9 @@ import Restaurant from "./screens/Restaurant"
 import Profile from "./screens/Profile"
 import Checkout from "./screens/Checkout"
 import TrackOrder from "./screens/TrackOrder"
+
+import Editprofile from "./screens/Editprofile"
+import History from "./screens/History"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -21,6 +24,8 @@ const App = () => {
 
     <NavigationContainer>
       <Stack.Navigator>
+
+
 
       
 
@@ -73,14 +78,23 @@ const App = () => {
           options={{
             headerShown: false,
           }} />
+                <Stack.Screen name="profile" component={Profile}
+          options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="history" component={History}
+          options={{
+            headerShown: false,
+          }} />
+           <Stack.Screen name="editprofile" component={Editprofile}
+          options={{
+            headerShown: false,
+          }} />
 
         
 
 
-        <Stack.Screen name="profile" component={Profile}
-          options={{
-            headerShown: false,
-          }} />
+      
 
 
 
