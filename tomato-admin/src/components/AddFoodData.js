@@ -43,6 +43,7 @@ const AddFoodData = () => {
             alert('Please select an image')
             return
         }
+        
 
         else {
             const imageRef = ref(storage, `FoodImages/${foodImage.name}`)
@@ -87,7 +88,9 @@ const AddFoodData = () => {
 
     }
 
-
+useEffect(() => {
+    console.log(foodImage)
+}, [foodImage])
   
  useEffect(() => {
     const getRestaurantData = async () => {

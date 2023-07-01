@@ -111,7 +111,9 @@ const Searchedfood = ({ navigation, route }) => {
                                             <View style={styles.itemdetails}>
                                                 <Text style={styles.foodname}>{item.foodName}</Text>
                                                 <Text style={styles.foodprice}>RS: {item.foodPrice} /-</Text>
+                                                
                                             </View>
+                                            
                                             <TouchableOpacity style={styles.boxbutton} onPress={() => navigation.navigate('restaurant', item.id)}>
                                                 <Text style={styles.boxbuttontext}>View</Text>
 
@@ -232,6 +234,7 @@ const styles = StyleSheet.create({
         height: 50,
         padding: 10,
         flexDirection: "row",
+        justifyContent: "space-between",
     },
     resname: {
         fontWeight: 500,

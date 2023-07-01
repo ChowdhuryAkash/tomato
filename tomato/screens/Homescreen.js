@@ -76,6 +76,8 @@ const Homescreen = ({ navigation }) => {
         { id: 8, image: require('../assets/FoodImages/coffee.png'), name: "Coffee", title: "coffee" },
         { id: 9, image: require('../assets/FoodImages/cake.png'), name: "Cake", title: "cake" },
         { id: 10, image: require('../assets/FoodImages/fried-rice.png'), name: "Fried Rice", title: "rice" },
+        { id: 13, image: require('../assets/FoodImages/icecream.png'), name: "Ice Cream", title: "cream" },
+        { id: 14, image: require('../assets/FoodImages/colddrink.png'), name: "Soft drinks", title: "drink" },
     ]
 
     const orderRef = firebase.firestore().collection('Orders');
@@ -290,6 +292,9 @@ const Homescreen = ({ navigation }) => {
 
 
             </ScrollView>
+            <TouchableOpacity onPress={()=>{navigation.navigate("social")}}>
+                <Text style={styles.specialtext}>Visit Tomato Social</Text>
+            </TouchableOpacity>
 
 
 
@@ -312,7 +317,7 @@ const styles = StyleSheet.create({
     },
     nav: {
         width: "100%",
-        height: 60,
+        height: 50,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -460,7 +465,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20,
         color: "#666",
-        marginTop: 35,
+        marginTop: 20,
 
     },
     seacrhresultsouter: {
@@ -468,7 +473,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 0,
         height: 'auto',
         backgroundColor: "white",
-        padding: 40,
+        padding: 20,
         marginTop: 20,
     },
     searchresultsinner: {
@@ -523,7 +528,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     namasteImage: {
-        height: 120,
+        height: 110,
         width: 100,
 
 
@@ -537,7 +542,7 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         paddingBottom: 10,
         paddingRight: 10,
-        bottom: 0,
+        bottom: 20,
         flexDirection: "row",
 
 

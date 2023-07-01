@@ -10,6 +10,8 @@ import Restaurant from "./screens/Restaurant"
 import Profile from "./screens/Profile"
 import Checkout from "./screens/Checkout"
 import TrackOrder from "./screens/TrackOrder"
+import Main from "./social/Main"
+import Comment from "./social/Comment"
 
 import Editprofile from "./screens/Editprofile"
 import History from "./screens/History"
@@ -24,6 +26,9 @@ const App = () => {
 
     <NavigationContainer>
       <Stack.Navigator>
+
+      
+    
 
 
 
@@ -90,7 +95,14 @@ const App = () => {
           options={{
             headerShown: false,
           }} />
-
+  <Stack.Screen name="social" component={Main}
+          options={{
+            headerShown: false,
+          }} />
+          <Stack.Screen name="comment" component={Comment}
+          options={{
+            headerShown: false,
+          }} />
         
 
 

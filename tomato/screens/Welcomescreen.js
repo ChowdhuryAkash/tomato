@@ -31,11 +31,27 @@ const Welcomescreen = ({navigation}) => {
   //     console.warn(err);
   //   }
   // };
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('email')
+        // alert(value)
+      if (value == "400") {
+        // navigation.navigate("homescreen")
 
+      }
+      else {
+        if(value.length>0){
+          navigation.replace("homescreen");
+        }
+      }
+    } catch (e) {
+      // error reading value
+    }
+  }
   useEffect(()=>{
     // requestLocationPermission();
     
-    
+    getData();
 
   },[])
 

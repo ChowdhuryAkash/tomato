@@ -45,6 +45,7 @@ const Signup = ({ navigation }) => {
             phone:"",
             password,
             address,
+            profilePic: "https://i.ibb.co/tDz2n4S/ic-launcher-round.png",
         }
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
