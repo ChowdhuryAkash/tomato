@@ -107,9 +107,10 @@ const History = ({ navigation }) => {
                                     })}
                                     <Text style={styles.ordertext}>Order Date:- {item.date}</Text>
                                     <Text style={styles.ordertext}>Order Time:- {item.time}</Text>
-                                    <Text style={styles.ordertext}>Pick up Location:- {item.restaurantName} </Text>
+                                    <Text style={styles.ordertext}>Restaurant:- {item.restaurantName} </Text>
                                     <Text style={styles.ordertext}>Delivery Location:- {item.DeliveryAddress}</Text>
-                                    <Text style={styles.ordertext}>Delivery Price:- {item.DeliveryFee}</Text>
+                                    <Text style={styles.ordertext}>Food Price:- {item.foodPrice}</Text>
+                                    <Text style={styles.ordertext}>Delivery Fee:- {item.DeliveryFee}</Text>
                                    
 
                                 </View>

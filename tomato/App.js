@@ -27,16 +27,16 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
 
-      
-    
 
 
 
-      
 
 
-        
-      <Stack.Screen name="welcomescreen" component={Welcomescreen}
+
+
+
+
+        <Stack.Screen name="welcomescreen" component={Welcomescreen}
           options={{
             headerShown: false,
           }} />
@@ -54,7 +54,7 @@ const App = () => {
           }} />
 
 
-        
+
 
         <Stack.Screen name="homescreen" component={Homescreen}
           options={{
@@ -79,34 +79,34 @@ const App = () => {
           options={{
             headerShown: false,
           }} />
-          <Stack.Screen name="trackorder" component={TrackOrder}
+        <Stack.Screen name="trackorder" component={TrackOrder}
           options={{
             headerShown: false,
           }} />
-                <Stack.Screen name="profile" component={Profile}
+        <Stack.Screen name="profile" component={Profile}
           options={{
             headerShown: false,
           }} />
-          <Stack.Screen name="history" component={History}
+        <Stack.Screen name="history" component={History}
           options={{
             headerShown: false,
           }} />
-           <Stack.Screen name="editprofile" component={Editprofile}
+        <Stack.Screen name="editprofile" component={Editprofile}
           options={{
             headerShown: false,
           }} />
-  <Stack.Screen name="social" component={Main}
+        <Stack.Screen name="social" component={Main}
           options={{
             headerShown: false,
           }} />
-          <Stack.Screen name="comment" component={Comment}
+        <Stack.Screen name="comment" component={Comment}
           options={{
             headerShown: false,
           }} />
-        
 
 
-      
+
+
 
 
 

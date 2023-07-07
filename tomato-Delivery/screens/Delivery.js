@@ -209,6 +209,8 @@ const Delivery = ({ navigation, route }) => {
           <Text style={styles.smallText}>ORDER ID <AntDesign name="down" size={14} color="white" /></Text>
           <Text style={styles.restaurantName}>{order[0].ID}</Text>
 
+          <Text style={styles.restaurantName}>Price: {order[0].foodPrice}</Text>
+
           <Text style={styles.status}>Have a safe journey!</Text>
           {
             resultInMinutes > 0 ?
@@ -445,7 +447,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 30,
     fontWeight: 700,
-    marginTop: 20
+    marginTop: 5
 
   },
   map: {

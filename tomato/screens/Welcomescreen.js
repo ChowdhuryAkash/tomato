@@ -117,11 +117,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welcometext: {
-    marginTop: 20,
-    fontSize: 60,
+    marginTop: 50,
+    fontSize: 50,
     fontStyle:"italic",
     color: "#eee",
-    width: "85%",
+    width: "100%",
     textAlign: "center",
     fontWeight: 300,
   },
@@ -134,10 +134,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(200,200,200,.3)",
     borderBottomWidth: 2,
     backgroundColor: "transparent",
-    marginVertical:30
+    marginVertical:20
   },
   minitext: {
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 20,
     color: "#eee",
     width: "85%",
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   buttons:{
     width:"100%",
     flexDirection:"row",
-    marginTop:20,
+    marginTop:10,
     justifyContent:"space-between",
     paddingHorizontal:"12%",
 

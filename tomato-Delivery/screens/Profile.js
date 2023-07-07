@@ -10,7 +10,7 @@ import {
   doc,
   or,
 } from "firebase/firestore";
-
+import { Linking } from 'react-native';
 
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -135,11 +135,13 @@ const Profile = (props) => {
         </TouchableOpacity>
         <View style={styles.hr} />
 
-        <View style={styles.activity}>
-          <AntDesign name="message1" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
-          <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Complaint</Text>
-          <EvilIcons name="arrow-right" size={34} color="#555" />
-        </View>
+        <TouchableOpacity onPress={() => Linking.openURL('mailto:akashaboutstudy@gmail.com') }>
+          <View style={styles.activity}>
+            <AntDesign name="message1" size={24} color="#555" style={{ marginRight: 20, backgroundColor: "#eee", padding: 6, borderRadius: 80 }} />
+            <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left", marginRight: 10, color: "#333", width: 200 }}>Complaint</Text>
+            <EvilIcons name="arrow-right" size={34} color="#555" />
+          </View>
+        </TouchableOpacity>
 
 
 

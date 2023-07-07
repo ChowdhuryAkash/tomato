@@ -120,6 +120,7 @@ const Createpost = () => {
                             postImage:url,
                             like:[],
                             comment:[],
+                            save:[],
                             profilePic,
                             dateTime: new Date(),
                         }

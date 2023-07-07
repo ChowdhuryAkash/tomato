@@ -21,6 +21,7 @@ const Restaurant = ({ navigation, route }) => {
     const [mainData, setMainData] = useState([[{ "restaurantEmail": "" }]]);
     const [resName, setResName] = useState();
     const [order, setOrder] = useState([]);
+    const[minimumQuantity,setMinimumQuantity]=useState(1);
 
 
     const foodRef = firebase.firestore().collection('FoodData');
@@ -107,7 +108,7 @@ const Restaurant = ({ navigation, route }) => {
         })
 
         showData.map((item, index) => {
-            if (order.length < 4) {
+            if (order.length <= showData.length) {
 
                 var id = item.id;
                 var arr = order;
@@ -173,12 +174,19 @@ const Restaurant = ({ navigation, route }) => {
                                                         <View style={styles.quantitybox}>
                                                             <AntDesign style={styles.quantityicon} name="minus" size={24} color="black" onPress={
                                                                 () => {
+                                                                    if(minimumQuantity>0)
+                                                                    {
+                                                                        setMinimumQuantity(minimumQuantity-1);
+                                                                    }
                                                                     decrement(0);
                                                                 }
                                                             } />
                                                             <Text style={styles.quantitytext}>{order[index] == null ? 1 : order[index].quantity}</Text>
                                                             <AntDesign style={styles.quantityicon} name="plus" size={18} color="black" onPress={
                                                                 () => {
+                                                                    if(minimumQuantity==0){
+                                                                        setMinimumQuantity(minimumQuantity+1);
+                                                                    }
                                                                     increment(0);
                                                                 }
                                                             } />
@@ -195,7 +203,15 @@ const Restaurant = ({ navigation, route }) => {
 
                                                     <Text style={styles.resnametext}>{item.restaurantName}</Text>
                                                 </View>
-                                                <TouchableOpacity style={styles.boxbutton} onPress={() => navigation.navigate('checkout', order)}>
+                                                <TouchableOpacity style={styles.boxbutton} onPress={() => {
+                                                    
+                                                    if(minimumQuantity==0){
+                                                        alert("Please select atleast one item");
+                                                    }
+                                                    else{
+                                                        navigation.navigate('checkout', order)
+                                                }}}>
+                                                    
                                                     <Text style={styles.boxbuttontext}>Proceed</Text>
 
                                                 </TouchableOpacity>
@@ -216,6 +232,7 @@ const Restaurant = ({ navigation, route }) => {
                                                         <View style={styles.quantitybox}>
                                                             <AntDesign style={styles.quantityicon} name="minus" size={24} color="black" onPress={
                                                                 () => {
+                                                                    
                                                                     decrement(0);
                                                                 }
                                                             } />
@@ -290,12 +307,19 @@ const Restaurant = ({ navigation, route }) => {
                                 <View style={styles.quantitybox}>
                                     <AntDesign style={styles.quantityicon} name="minus" size={24} color="black" onPress={
                                         () => {
+                                            if(minimumQuantity>0)
+                                            {
+                                                setMinimumQuantity(minimumQuantity-1);
+                                            }
                                             decrement(index + 1);
                                         }
                                     } />
                                     <Text style={styles.quantitytext}>{order[index + 1] == null ? 0 : order[index + 1].quantity}</Text>
                                     <AntDesign style={styles.quantityicon} name="plus" size={18} color="black" onPress={
                                         () => {
+                                            if(minimumQuantity==0){
+                                                setMinimumQuantity(minimumQuantity+1);
+                                            }
                                             increment(index + 1);
                                         }
                                     } />
@@ -378,7 +402,7 @@ const styles = StyleSheet.create({
         padding: 5,
         color: "#000",
         width: 38,
-        height: 30,
+        height: "auto",
         textAlign: "center",
         fontWeight: "bold",
         fontSize: 18

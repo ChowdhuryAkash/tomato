@@ -18,7 +18,8 @@ const Searchedfood = ({ navigation, route }) => {
     const [foodData, setFoodData] = useState([]);
     const [showData, setShowData] = useState([]);
     const [gotFood, setGotFood] = useState(false);
-    const [loading, setLoading] = useState(1)
+    const [loading, setLoading] = useState(1);
+    const [origin, setOrigin] = useState({ latitude: 22.5219843, longitude: 88.3929623 });
 
 
     const foodRef = firebase.firestore().collection('FoodData').where("availablity", "==", true);
@@ -47,7 +48,48 @@ const Searchedfood = ({ navigation, route }) => {
     }, [restaurantData])
 
 
+    const distance = (lat1,
+        lat2, lon1, lon2) => {
 
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 = lon1 * Math.PI / 180;
+        lon2 = lon2 * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+
+        // Haversine formula
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2)
+            + Math.cos(lat1) * Math.cos(lat2)
+            * Math.pow(Math.sin(dlon / 2), 2);
+
+        let c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        let r = 6371;
+
+        // calculate the result
+        return (c * r);
+    }
+
+
+    const getLocation = async () => {
+
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
+        // console.warn(location.coords.latitude);
+        // console.warn(location.coords.longitude);
+    }
 
 
 
@@ -91,13 +133,13 @@ const Searchedfood = ({ navigation, route }) => {
                     backgroundColor="#ff4242"
                     barStyle="light-content"
                 />
-                <Text style={styles.maintext}>All resturants who serve {fooddata}</Text>
+                <Text style={styles.maintext}>All resturants near to you (within 5km) who serve {fooddata}</Text>
                 {showData.map((item) => {
                     return (
                         <View key={item.id}>
 
                             {restaurantData.map((restaurant) => {
-                                if (restaurant.restaurantEmail == item.restaurantEmail && restaurant.open) {
+                                if (restaurant.restaurantEmail == item.restaurantEmail && restaurant.open && distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long) < 5) {
                                     return (
                                         <View key={item.id} style={styles.box}>
                                             <View style={styles.productimageouter}>

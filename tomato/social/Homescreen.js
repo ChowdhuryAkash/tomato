@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 import { db, storage, firebase } from '../Firebase/firebaseConfig'
 import { collection, doc, getDocs, setDoc, updateDoc, where, addDoc } from "firebase/firestore";
@@ -17,7 +18,7 @@ const Homescreen = (props) => {
     const [likes, setLikes] = useState(0);
     const [email, setEmail] = useState("")
     const [name, setName] = useState("");
-    const[profilePic,setProfilePic]=useState(" ")
+    const [profilePic, setProfilePic] = useState(" ")
 
     const [posts, setPosts] = useState([])
     const [post, setPost] = useState([]);
@@ -31,7 +32,7 @@ const Homescreen = (props) => {
     const [sound, setSound] = React.useState();
     async function playSound() {
         console.log('Loading Sound');
-        const { sound } = await Audio.Sound.createAsync(require('../assets/bottle.mp3')
+        const { sound } = await Audio.Sound.createAsync(require('../assets/bottle2.mp3')
         );
         setSound(sound);
 
@@ -104,6 +105,34 @@ const Homescreen = (props) => {
 
 
     }
+
+    const saveHandler = async (ID, saves) => {
+        const postDoc = doc(db, "posts", ID);
+        var postData;
+
+        if (saves.includes(email)) {
+            const save = saves;
+            let index = save.indexOf(email);
+            save.splice(index, 1);
+            postData = {
+                save: save
+            }
+
+        }
+        else {
+            // playSound();
+            saves.push(email)
+            postData = {
+                save: saves
+            }
+        }
+        await updateDoc(postDoc, postData).catch((error) => {
+            console.log("Error updating document: ", error);
+        });
+
+
+
+    }
     const getData = async () => {
         try {
             const value = await AsyncStorage.getItem('email')
@@ -165,6 +194,11 @@ const Homescreen = (props) => {
                                     />
                                     <View style={styles.postReactions}>
                                     </View>
+                                    <View style={styles.postReactCounts}>
+                                        <Text>{item.like.length} Likes</Text>
+                                        <Text> {item.comment.length} comments</Text>
+
+                                    </View>
 
                                     <View style={styles.postReact}>
                                         <TouchableOpacity onPress={() => { likeHandler(item.ID, item.like) }}>
@@ -186,16 +220,31 @@ const Homescreen = (props) => {
 
 
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => { props.navigating("comment", { ID: item.ID, comments: item.comment, name: name, email: email,profilePic:profilePic }) }}>
+                                        <TouchableOpacity onPress={() => { props.navigating("comment", { ID: item.ID, comments: item.comment, name: name, email: email, profilePic: profilePic }) }}>
                                             <View style={styles.postReactButton}>
                                                 <FontAwesome5 name="comment-alt" size={20} color="#888" />
                                                 <Text style={styles.postReactText}>Comment</Text>
                                             </View>
                                         </TouchableOpacity>
-                                        <View style={styles.postReactButton}>
-                                            <MaterialCommunityIcons name="share-outline" size={28} color="#888" />
-                                            <Text style={styles.postReactText}>Share</Text>
-                                        </View>
+
+                                        <TouchableOpacity onPress={() => { saveHandler(item.ID, item.save) }}>
+
+                                            {item.save.includes(email) ?
+                                                <View style={styles.postReactButton}>
+                                                    <Entypo name="save" size={24} color="#ff3d00" />
+                                                    <Text style={styles.postReactText}>Unsave</Text>
+                                                </View>
+
+                                                :
+                                                <View style={styles.postReactButton}>
+                                                    <Entypo name="save" size={24} color="#888" />
+                                                    <Text style={styles.postReactText}>Save</Text>
+                                                </View>
+
+
+                                            }
+                                        </TouchableOpacity>
+
                                     </View>
 
                                 </View>
@@ -293,6 +342,18 @@ const styles = StyleSheet.create({
     postImage: {
         height: 220,
         width: "auto",
+    },
+    postReactCounts: {
+        height: 30,
+        width: "100%",
+        backgroundColor: "#fff",
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        justifyContent: "space-between",
+        borderBottomColor: "#ddd",
+        borderBottomWidth: 1,
+
     },
     postReact: {
         height: 50,

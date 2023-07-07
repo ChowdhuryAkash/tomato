@@ -12,6 +12,7 @@ import { LogBox } from 'react-native';
 import { collection, doc, getDocs, setDoc, updateDoc, where } from "firebase/firestore";
 import Loader from '../components/Loader';
 import { firebase } from '../Firebase/firebaseConfig'
+import * as Location from 'expo-location';
 
 const Homescreen = ({ navigation }) => {
     const [images, setImages] = useState([
@@ -31,9 +32,24 @@ const Homescreen = ({ navigation }) => {
 
     const [searchVal, setSearchVal] = useState("");
     const [NonVegData, setNonVegData] = useState([]);
+    const [origin, setOrigin] = useState({ latitude: 22.5219843, longitude: 88.3929623 });
 
 
     const foodRef = firebase.firestore().collection('FoodData');
+
+    const getLocation = async () => {
+
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setOrigin({ latitude: location.coords.latitude, longitude: location.coords.longitude })
+        // console.warn(location.coords.latitude);
+        // console.warn(location.coords.longitude);
+    }
 
 
 
@@ -45,6 +61,7 @@ const Homescreen = ({ navigation }) => {
             navigation.replace("homescreen")
 
         }
+        getLocation();
     }, [])
 
     useEffect(() => {
@@ -138,6 +155,36 @@ const Homescreen = ({ navigation }) => {
 
 
 
+    const distance = (lat1,
+        lat2, lon1, lon2) => {
+
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 = lon1 * Math.PI / 180;
+        lon2 = lon2 * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+
+        // Haversine formula
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2)
+            + Math.cos(lat1) * Math.cos(lat2)
+            * Math.pow(Math.sin(dlon / 2), 2);
+
+        let c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        let r = 6371;
+
+        // calculate the result
+        return (c * r);
+    }
+
+
+
 
     return (
         <ScrollView style={styles.main}>
@@ -146,25 +193,28 @@ const Homescreen = ({ navigation }) => {
                 barStyle="light-content"
             />
             <View style={styles.nav}>
-                {/* <Entypo name="location-pin" size={34} color="#ff4242" /> */}
+
+                <EvilIcons name="user" size={40} color="#ff4242" onPress={() => navigation.replace("profile")} />
                 <View style={styles.locationbox}>
-                    {/* <Text style={styles.foodietext}>Home <AntDesign name="down" size={14} color="black" /></Text> */}
+
                     {
                         user.length > 0 ?
                             <Text style={styles.foodietext}>Welcome, {user[0].name}</Text>
                             :
-                            ""
+                            <Text style={styles.foodietext}>Welcome</Text>
                     }
-
-
                 </View>
-                <EvilIcons name="user" size={36} color="#ff4242" onPress={() => navigation.replace("profile")} />
+
+                <TouchableOpacity onPress={() => { navigation.navigate("social") }}>
+                    <Text style={styles.specialtext2}>Social</Text>
+                </TouchableOpacity>
+
 
             </View>
 
             <View style={styles.searchbox}>
                 <AntDesign name="search1" size={24} color="#FF4242" />
-                <TextInput style={styles.searchitem} value={search} placeholder='Search Food' onChangeText={(e) => {
+                <TextInput style={styles.searchitem} value={search} placeholder='Search Food or Restaurant' onChangeText={(e) => {
                     setSearch(e)
                 }} />
                 {
@@ -187,6 +237,19 @@ const Homescreen = ({ navigation }) => {
                                         setSearch("");
                                         navigation.navigate('searchedfood', item.foodName.toLowerCase())
                                     }}>{item.foodName}</Text>
+
+                                </View>
+                            )
+                        }
+                        if (item.restaurantName.toLowerCase().includes(search.toLowerCase())) {
+                            return (
+                                <View style={styles.searchresult} >
+                                    <AntDesign name="arrowright" size={24} color="black" />
+
+                                    <Text style={styles.searchresulttext} onPress={() => {
+                                        setSearch("");
+                                        navigation.navigate('searchedfood', item.foodName.toLowerCase())
+                                    }}>{item.restaurantName}</Text>
                                 </View>
                             )
                         }
@@ -292,9 +355,7 @@ const Homescreen = ({ navigation }) => {
 
 
             </ScrollView>
-            <TouchableOpacity onPress={()=>{navigation.navigate("social")}}>
-                <Text style={styles.specialtext}>Visit Tomato Social</Text>
-            </TouchableOpacity>
+
 
 
 
@@ -328,14 +389,14 @@ const styles = StyleSheet.create({
     foodietext: {
         color: "#111",
         fontWeight: 500,
-        fontSize: 18,
+        fontSize: 16,
     },
     searchbox: {
         flexDirection: "row",
         backgroundColor: "#FFF",
         width: "90%",
         height: 45,
-        marginTop: 5,
+        marginTop: 15,
         borderRadius: 20,
         elevation: 20,
         padding: 10,
@@ -465,7 +526,25 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20,
         color: "#666",
-        marginTop: 20,
+        backgroundColor: "#fff",
+        padding: 10,
+        borderRadius: 10,
+        marginTop: 10,
+
+
+
+    },
+    specialtext2: {
+        textAlign: "center",
+        fontSize: 12,
+        color: "#fff",
+        backgroundColor: "#ff4242",
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 5,
+        fontWeight: "bold",
+
+
 
     },
     seacrhresultsouter: {
