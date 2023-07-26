@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View, StatusBar, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, Image, ScrollView, TouchableOpacity, Button } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import * as Linking from 'expo-linking';
 
 
 import { AntDesign } from '@expo/vector-icons';
@@ -196,7 +198,16 @@ const Homescreen = (props) => {
                                     </View>
                                     <View style={styles.postReactCounts}>
                                         <Text>{item.like.length} Likes</Text>
+                                        <TouchableOpacity
+                                            title="Order Grocery"
+                                            onPress={() => Linking.openURL('https://play.google.com/store/apps/details?id=com.grofers.customerapp')}
+                                            style={styles.ordrGroceryButton}
+
+                                        >
+                                            <Text style={styles.ordrGroceryButtonText}>Order Grocery</Text>
+                                        </TouchableOpacity>
                                         <Text> {item.comment.length} comments</Text>
+
 
                                     </View>
 
@@ -379,6 +390,22 @@ const styles = StyleSheet.create({
         marginLeft: 5,
 
 
-    }
+    },
+    ordrGroceryButton: {
+        height: 20,
+        width: 100,
+        backgroundColor: "#FDBD01",
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+        marginLeft: 30,
+    },
+    ordrGroceryButtonText: {
+        fontSize: 12,
+        fontWeight: 500,
+        color: "#fff",
+        elevation: 5,
+    },
+
 
 })

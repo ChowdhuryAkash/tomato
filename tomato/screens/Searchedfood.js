@@ -133,13 +133,13 @@ const Searchedfood = ({ navigation, route }) => {
                     backgroundColor="#ff4242"
                     barStyle="light-content"
                 />
-                <Text style={styles.maintext}>All resturants near to you (within 5km) who serve {fooddata}</Text>
+                <Text style={styles.maintext}>All resturants near to you (within 10km) who serve {fooddata}</Text>
                 {showData.map((item) => {
                     return (
                         <View key={item.id}>
 
                             {restaurantData.map((restaurant) => {
-                                if (restaurant.restaurantEmail == item.restaurantEmail && restaurant.open && distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long) < 5) {
+                                if (restaurant.restaurantEmail == item.restaurantEmail && restaurant.open && distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long) < 10) {
                                     return (
                                         <View key={item.id} style={styles.box}>
                                             <View style={styles.productimageouter}>
@@ -155,6 +155,7 @@ const Searchedfood = ({ navigation, route }) => {
                                                 <Text style={styles.foodprice}>RS: {item.foodPrice} /-</Text>
                                                 
                                             </View>
+                                            <Text style={styles.distanceText}>Distance : {parseFloat(distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long)).toFixed(2)} KM</Text>
                                             
                                             <TouchableOpacity style={styles.boxbutton} onPress={() => navigation.navigate('restaurant', item.id)}>
                                                 <Text style={styles.boxbuttontext}>View</Text>
@@ -231,16 +232,20 @@ const styles = StyleSheet.create({
         color: "#999",
         textAlign: "center",
         marginTop: 20,
+        width: "90%",
+        alignSelf: "center",
         textDecorationColor: "#ff4242",
     },
     box: {
         width: "90%",
-        height: 350,
+        height: "auto",
         elevation: 10,
         margin: "5%",
         backgroundColor: "#FFF",
         borderRadius: 10,
+        paddingBottom: 10,
     },
+   
     productimageouter: {
         width: "100%",
         height: 200,
@@ -299,6 +304,11 @@ const styles = StyleSheet.create({
         textAlign: "center",
         padding: 4,
         borderRadius: 10,
+    },
+    distanceText:{
+        marginLeft:10,
+        color:"#999",
+        marginBottom:16,
     },
     boxbutton: {
         width: "90%",

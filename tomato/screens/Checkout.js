@@ -10,6 +10,10 @@ import { Audio } from 'expo-av';
 import * as Location from 'expo-location';
 
 
+import { FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+
 const Checkout = ({ navigation, route }) => {
     const [sound, setSound] = React.useState();
 
@@ -25,13 +29,17 @@ const Checkout = ({ navigation, route }) => {
 
 
 
-    const order = route.params;
+    const order = route.params.order;
+    const restaurantLat = route.params.restaurantLat;
+    const restaurantLong = route.params.restaurantLong;
     // console.warn(order);
 
     const [foodData, setFoodData] = useState([]);
     const [DeliveryAddress, setDeliveryAddress] = useState("");
     const [phone, setPhone] = useState("");
-    const DeliveryFee = 70;
+    const[cookingInstructions,setCookingInstructions]=useState("");
+   
+    var DeliveryFee;
     const foodRef = firebase.firestore().collection('FoodData');
     const restaurantRef = firebase.firestore().collection('Restaurants');
 
@@ -48,6 +56,7 @@ const Checkout = ({ navigation, route }) => {
 
     // const[totalPrice,setTotalPrice]=useState(0);
     var totalPrice = 0;
+    var taxPrice = 0;
     // const[userEmailId,setUserEmailId]=useState("");
     // const[restaurantEmailId,setRestaurantEmailId]=useState("");
     let userEmailId = "";
@@ -138,6 +147,7 @@ const Checkout = ({ navigation, route }) => {
     
     
     }, [user])
+   
 
 
     useEffect(() => {
@@ -151,7 +161,44 @@ const Checkout = ({ navigation, route }) => {
 
     }, [restaurant])
 
+    useEffect(() => {
+        taxPrice=totalPrice*0.1;
 
+    }, [totalPrice])
+    const distance = (lat1,
+        lat2, lon1, lon2) => {
+
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 = lon1 * Math.PI / 180;
+        lon2 = lon2 * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+
+        // Haversine formula
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2)
+            + Math.cos(lat1) * Math.cos(lat2)
+            * Math.pow(Math.sin(dlon / 2), 2);
+
+        let c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        let r = 6371;
+
+        // calculate the result
+        return (c * r);
+    }
+    var deliveryDistance=parseFloat(distance(origin.latitude, restaurantLat, origin.longitude, restaurantLong)).toFixed(2);
+    if(deliveryDistance<1){
+        DeliveryFee=35;
+    }
+    else{
+        DeliveryFee=30+(deliveryDistance-1)*15;
+    }
 
     const getData = async () => {
         try {
@@ -198,7 +245,7 @@ const Checkout = ({ navigation, route }) => {
                 restaurantName: restaurantName,
                 userEmailId,
                 order,
-                foodPrice: totalPrice,
+                foodPrice: totalPrice+parseFloat(totalPrice * 0.1).toFixed(2),
                 DeliveryFee,
                 DeliveryAddress,
                 phone,
@@ -217,6 +264,7 @@ const Checkout = ({ navigation, route }) => {
                 time: time,
                 deliveryTime: nexttime,
                 dateTimeStamp: currentdate.toString(),
+                cookingInstructions: cookingInstructions,
 
 
             }
@@ -301,7 +349,7 @@ const Checkout = ({ navigation, route }) => {
                                                 </View>
                                                 <View style={styles.menuMid}>
                                                     <Text style={styles.quantityText}>Quantity : {orderItem.quantity}</Text>
-                                                    <Text style={styles.priceText}>Price/unit : {item.foodPrice}</Text>
+                                                    <Text style={styles.priceText}>Price/unit : {item.foodPrice} Rs.</Text>
                                                 </View>
 
                                             </View>
@@ -328,6 +376,7 @@ const Checkout = ({ navigation, route }) => {
 
             </ScrollView>
             <View style={styles.bottom}>
+                <Text style={styles.inputName}>Delivery Location</Text>
                 <TextInput
                     style={styles.input}
                     placeholder='Enter your House number'
@@ -338,6 +387,7 @@ const Checkout = ({ navigation, route }) => {
                     }}>
 
                 </TextInput>
+                <Text style={styles.inputName}>Contact Number</Text>
                 <TextInput
                     style={styles.input}
                     placeholder='Enter your Phone number'
@@ -348,9 +398,27 @@ const Checkout = ({ navigation, route }) => {
                     }}>
 
                 </TextInput>
-                <Text style={{ fontSize: 20, marginBottom: 6 }}>Food Total Price : {totalPrice} Rs.</Text>
-                <Text style={{ fontSize: 20, marginBottom: 6 }}>Delivery Charge :{DeliveryFee} Rs.</Text>
-                <Text style={{ fontSize: 32, marginBottom: 20 }}>Total Price : {totalPrice + DeliveryFee} Rs.</Text>
+
+                <Text style={styles.inputName}>Add cooking instructions</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder='Add additional cooking instructions'
+                    value={cookingInstructions}
+                    onChange={(e) => {
+                        setCookingInstructions(e.nativeEvent.text);
+
+                    }}>
+
+                </TextInput>
+                <View style={styles.billDetails}>
+                <Text style={{ fontSize: 18, marginBottom: 3,fontWeight:"bold" }}>Subtotal :     {totalPrice} Rs.</Text>
+                <Text style={{ fontSize: 14, marginBottom: 3 }}><FontAwesome name="bank" size={12} color="black" /> GST and restaurant Charges :     {parseFloat(totalPrice * 0.1).toFixed(2)} Rs.</Text>
+                <Text style={{ fontSize: 14, marginBottom: 13 }}><MaterialCommunityIcons name="bike-fast" size={12} color="black" /> Delivery Charge :     {DeliveryFee} Rs.</Text>
+                <Text style={{ fontSize: 22, marginBottom: 2 }}>Total Price : {totalPrice + DeliveryFee+(totalPrice * 0.1)} Rs.</Text>
+                </View>
+               
+                
+                
                 <View style={styles.btns}>
                     <Text style={{ lineHeight: 40 }}>Payment mode : COD</Text>
                     <TouchableOpacity style={styles.boxbutton} onPress={() => {
@@ -369,14 +437,14 @@ export default Checkout
 
 const styles = StyleSheet.create({
     topText: {
-        fontSize: 30,
+        fontSize: 24,
         color: "#777",
         textAlign: "center",
         marginTop: 10
 
     },
     allmenu: {
-        height: "35%",
+        height: "25%",
         marginTop: 0,
         marginBottom: 20
     },
@@ -385,46 +453,55 @@ const styles = StyleSheet.create({
         height: 50,
         padding: 10,
         backgroundColor: "#fff",
-        elevation: 20,
+        elevation: 2,
         borderRadius: 7,
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 20
+        marginBottom: 15
+
+    },
+    inputName: {
+        fontSize: 14,
+        marginBottom:3,
+        marginLeft: 5
 
     },
     menu: {
         width: "80%",
-        height: 100,
+        height: 80,
+        backgroundColor: "#fff",
+        elevation: 2,
+        borderRadius: 7,
+        marginBottom: 10,
         borderBottomColor: "#ccc",
-        borderBottomWidth: 2,
+        borderBottomWidth: 1,
         padding: 10
     },
     menuTop: {
         flexDirection: "row",
     },
     foodImage: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         marginRight: 20
     },
     menuMid: {
         flexDirection: "row"
     },
     quantityText: {
-        fontSize: 20,
-        marginRight: 20
+        fontSize: 14,
+        marginRight: 12
     },
     priceText: {
-        fontSize: 20,
-        marginRight: 20
+        fontSize: 14,
+        marginRight: 12
     },
     nameText: {
-        fontSize: 17,
-        lineHeight: 50
+        fontSize: 14,
     },
     bottom: {
-        width: "80%",
-        marginLeft: "10%"
+        width: "90%",
+        marginLeft: "5%"
 
     },
     btns: {
@@ -447,6 +524,17 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 20,
         marginTop: 4
+    },
+    billDetails: {
+        width: "100%",
+        height: 130,
+        backgroundColor: "#fff",
+        elevation: 2,
+        borderRadius: 7,
+        flexDirection: "column",
+        marginBottom: 25,
+        marginTop: 10,
+        padding: 10
     },
 
 })

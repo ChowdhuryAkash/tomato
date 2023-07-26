@@ -33,6 +33,19 @@ const Homescreen = ({ navigation }) => {
     const [searchVal, setSearchVal] = useState("");
     const [NonVegData, setNonVegData] = useState([]);
     const [origin, setOrigin] = useState({ latitude: 22.5219843, longitude: 88.3929623 });
+    const [restaurantData, setRestaurantData] = useState([]);
+    const [showrestaurantData, setShowrestaurantData] = useState([]);
+    const restaurantRef = firebase.firestore().collection('Restaurants');
+
+
+    useEffect(() => {
+        restaurantRef.onSnapshot(snapshot => {
+            setRestaurantData(snapshot.docs.map(doc => ({ ...doc.data(), ID: doc.id })))
+        }
+        )
+
+
+    }, [])
 
 
     const foodRef = firebase.firestore().collection('FoodData');
@@ -231,26 +244,50 @@ const Homescreen = ({ navigation }) => {
                     ({ item }) => {
                         if (item.foodName.toLowerCase().includes(search.toLowerCase())) {
                             return (
-                                <View style={styles.searchresult} >
-                                    <AntDesign name="arrowright" size={24} color="black" />
-                                    <Text style={styles.searchresulttext} onPress={() => {
-                                        setSearch("");
-                                        navigation.navigate('searchedfood', item.foodName.toLowerCase())
-                                    }}>{item.foodName}</Text>
+                                <>
+                                    {
+                                        restaurantData.map((restaurant) => {
+                                           if(restaurant.restaurantEmail == item.restaurantEmail && distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long) < 10){
+                                            return (
+                                                <View style={styles.searchresult} >
+                                                    <AntDesign name="arrowright" size={24} color="black" />
+                                                    <Text style={styles.searchresulttext} onPress={() => {
+                                                        setSearch("");
+                                                        navigation.navigate('searchedfood', item.foodName.toLowerCase())
+                                                    }}>{item.foodName}</Text>
 
-                                </View>
+                                                </View>
+                                            )
+                                                }
+
+                                        })
+                                    }
+                                </>
+
                             )
                         }
                         if (item.restaurantName.toLowerCase().includes(search.toLowerCase())) {
                             return (
-                                <View style={styles.searchresult} >
-                                    <AntDesign name="arrowright" size={24} color="black" />
+                                <>
+                                    {
+                                        restaurantData.map((restaurant) => {
+                                           if(restaurant.restaurantEmail == item.restaurantEmail && distance(origin.latitude, restaurant.lat, origin.longitude, restaurant.long) < 10){
+                                            return (
+                                                <View style={styles.searchresult} >
+                                                    <AntDesign name="arrowright" size={24} color="black" />
+                                                    <Text style={styles.searchresulttext} onPress={() => {
+                                                        setSearch("");
+                                                        navigation.navigate('restaurant', item.id)
+                                                    }}>{item.foodName} | {item.restaurantName}</Text>
 
-                                    <Text style={styles.searchresulttext} onPress={() => {
-                                        setSearch("");
-                                        navigation.navigate('searchedfood', item.foodName.toLowerCase())
-                                    }}>{item.restaurantName}</Text>
-                                </View>
+                                                </View>
+                                            )
+                                                }
+
+                                        })
+                                    }
+                                </>
+
                             )
                         }
                     }

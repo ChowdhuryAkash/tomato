@@ -22,6 +22,10 @@ const Restaurant = ({ navigation, route }) => {
     const [resName, setResName] = useState();
     const [order, setOrder] = useState([]);
     const[minimumQuantity,setMinimumQuantity]=useState(1);
+    // const[restaurantLat,setRestaurantLat]=useState();
+    // const[restaurantLong,setRestaurantLong]=useState();
+    var restaurantLat;
+    var restaurantLong;
 
 
     const foodRef = firebase.firestore().collection('FoodData');
@@ -163,6 +167,8 @@ const Restaurant = ({ navigation, route }) => {
 
                                     if (restaurant.restaurantEmail == item.restaurantEmail && restaurant.open) {
                                         // setProceed(true);
+                                        restaurantLat=restaurant.lat;
+                                        restaurantLong=restaurant.long;
                                         return (
                                             <>
                                                 <View key={item.id}>
@@ -200,6 +206,7 @@ const Restaurant = ({ navigation, route }) => {
                                                         </View>
 
                                                     </View>
+                                                  
 
                                                     <Text style={styles.resnametext}>{item.restaurantName}</Text>
                                                 </View>
@@ -209,7 +216,7 @@ const Restaurant = ({ navigation, route }) => {
                                                         alert("Please select atleast one item");
                                                     }
                                                     else{
-                                                        navigation.navigate('checkout', order)
+                                                        navigation.navigate('checkout', {order:order,restaurantLat:restaurantLat,restaurantLong:restaurantLong})
                                                 }}}>
                                                     
                                                     <Text style={styles.boxbuttontext}>Proceed</Text>

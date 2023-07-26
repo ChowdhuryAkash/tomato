@@ -76,6 +76,7 @@ export default function OrderSection() {
                             <div className='order'>
                                 <div className='price'>
                                     <p>ID : {item.ID}</p>
+                                    <p>Instructions -- {item.cookingInstructions}</p>
 
 
                                 </div>
